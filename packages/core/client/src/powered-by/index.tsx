@@ -13,6 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentAppInfo } from '../appInfo/CurrentAppInfoProvider';
 import { usePlugin } from '../application';
+import { useSystemSettings } from '../system-settings';
 import { useToken } from '../style';
 
 export const PoweredBy = () => {
@@ -20,6 +21,7 @@ export const PoweredBy = () => {
   const { token } = useToken();
   const customBrandPlugin: any = usePlugin('@nocobase/plugin-custom-brand');
   const data = useCurrentAppInfo();
+  const systemSettings = useSystemSettings();
   const urls = {
     'en-US': 'https://www.nocobase.com',
     'zh-CN': 'https://www.nocobase.com/cn/',
@@ -36,15 +38,16 @@ export const PoweredBy = () => {
   `;
   const appVersion = `<span class="nb-app-version">v${data?.data?.version}</span>`;
 
+  const brandHtml =
+    systemSettings?.data?.data?.options?.poweredBy ||
+    customBrandPlugin?.options?.options?.brand ||
+    `Powered by <a href="${urls[i18n.language] || urls['en-US']}" target="_blank">NocoBase</a>`;
+
   return (
     <div
       className={cx(style, 'nb-brand')}
       dangerouslySetInnerHTML={{
-        __html: parseHTML(
-          customBrandPlugin?.options?.options?.brand ||
-            `Powered by <a href="${urls[i18n.language] || urls['en-US']}" target="_blank">NocoBase</a>`,
-          { appVersion },
-        ),
+        __html: parseHTML(brandHtml, { appVersion }),
       }}
     ></div>
   );

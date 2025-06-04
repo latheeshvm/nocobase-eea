@@ -19,9 +19,13 @@ export class PluginSystemSettingsServer extends Plugin {
   async install(options?: InstallOptions) {
     const plugin = this.pm.get('file-manager') as PluginFileManagerServer;
     const brandTitle = process.env.BRAND_TEXT || 'App';
+    const logoUrl = process.env.BRAND_LOGO_URL;
     const logoPath = process.env.BRAND_LOGO_PATH;
+    const poweredBy = process.env.BRAND_POWERED_BY;
     let logo;
-    if (logoPath) {
+    if (logoUrl) {
+      logo = { title: 'brand-logo', url: logoUrl };
+    } else if (logoPath) {
       if (plugin) {
         logo = await plugin.createFileRecord({
           filePath: resolve(process.cwd(), logoPath),
@@ -43,6 +47,7 @@ export class PluginSystemSettingsServer extends Plugin {
         title: brandTitle,
         appLang: this.getInitAppLang(options),
         enabledLanguages: [this.getInitAppLang(options)],
+        options: poweredBy ? { poweredBy } : {},
         ...(logo ? { logo } : {}),
       },
     });
@@ -56,7 +61,17 @@ export class PluginSystemSettingsServer extends Plugin {
     });
     const json = instance.toJSON();
     json.raw_title = json.title;
-    json.title = this.app.environment.renderJsonTemplate(instance.title);
+    json.title = process.env.BRAND_TEXT
+      ? process.env.BRAND_TEXT
+      : this.app.environment.renderJsonTemplate(instance.title);
+    if (process.env.BRAND_LOGO_URL) {
+      json.logo = json.logo || {};
+      json.logo.url = process.env.BRAND_LOGO_URL;
+    }
+    if (process.env.BRAND_POWERED_BY) {
+      json.options = json.options || {};
+      json.options.poweredBy = process.env.BRAND_POWERED_BY;
+    }
     return json;
   }
 

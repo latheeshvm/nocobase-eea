@@ -57,6 +57,11 @@ export function AuthLayout() {
       <div style={{ position: 'fixed', top: '2em', right: '2em' }}>
         <SwitchLanguage />
       </div>
+      {data?.data?.logo?.url && (
+        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+          <img src={data.data.logo.url} style={{ maxWidth: 200 }} />
+        </div>
+      )}
       <h1 style={{ textAlign: 'center' }}>
         <ReadPretty.TextArea value={data?.data?.title} />
       </h1>
