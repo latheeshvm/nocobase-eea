@@ -18,29 +18,32 @@ export class PluginSystemSettingsServer extends Plugin {
 
   async install(options?: InstallOptions) {
     const plugin = this.pm.get('file-manager') as PluginFileManagerServer;
-    const logo = plugin
-      ? await plugin.createFileRecord({
-          filePath: resolve(__dirname, './logo.png'),
+    const brandTitle = process.env.BRAND_TEXT || 'App';
+    const logoPath = process.env.BRAND_LOGO_PATH;
+    let logo;
+    if (logoPath) {
+      if (plugin) {
+        logo = await plugin.createFileRecord({
+          filePath: resolve(process.cwd(), logoPath),
           collectionName: 'attachments',
           values: {
-            title: 'nocobase-logo',
-            extname: '.png',
-            mimetype: 'image/png',
+            title: 'brand-logo',
           },
-        })
-      : {
-          title: 'nocobase-logo',
-          filename: '682e5ad037dd02a0fe4800a3e91c283b.png',
-          extname: '.png',
-          mimetype: 'image/png',
-          url: '/nocobase.png',
+        });
+      } else {
+        logo = {
+          title: 'brand-logo',
+          filename: logoPath.split('/').pop(),
+          url: `/${logoPath.split('/').pop()}`,
         };
+      }
+    }
     await this.db.getRepository('systemSettings').create({
       values: {
-        title: 'NocoBase',
+        title: brandTitle,
         appLang: this.getInitAppLang(options),
         enabledLanguages: [this.getInitAppLang(options)],
-        logo,
+        ...(logo ? { logo } : {}),
       },
     });
   }
