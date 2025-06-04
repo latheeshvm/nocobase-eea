@@ -62,6 +62,15 @@ NocoBase adopts plugin architecture, all new functions can be realized by develo
 
 ![plugins](https://static-docs.nocobase.com/plugins.png)
 
+## Branding with environment variables
+
+Several environment variables allow overriding branding information shown on the login page and in the footer:
+
+- `BRAND_TEXT` – text displayed as the application title.
+- `BRAND_LOGO_URL` – URL of the logo image.
+- `BRAND_LOGO_PATH` – path to a local logo file used during installation if `BRAND_LOGO_URL` is not provided.
+- `BRAND_POWERED_BY` – HTML string for the footer. `${appVersion}` will be replaced with the app version.
+
 ## Installation
 
 NocoBase supports three installation methods:
